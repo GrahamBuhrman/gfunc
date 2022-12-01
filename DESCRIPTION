@@ -1,0 +1,14 @@
+Package: gfunc
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: 
+    person(Graham = "First", 
+           Buhrman = "Last",
+           email = "gwbuhrman@gmail.com", 
+           role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: This iis my personal package. It contains functions I find useful for various projects.
+License: Placeholder text
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.2
