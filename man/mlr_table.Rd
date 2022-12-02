@@ -21,7 +21,9 @@ Given a multivariate linear regression model and the labels for parameters, crea
 
 # create MLR model
 
-m1 <- lm(mpg ~ wt + am)
+data(mtcars)
+
+m1 <- lm(mpg ~ wt + am, data = mtcars)
 
 # make named list of parameter labels
 
@@ -30,5 +32,4 @@ parameter_names <- list(wt = "Weight", am = "Transmission")
 # generate results table
 
 mlr_table(model = m1, var_names = parameter_names)
-
 }

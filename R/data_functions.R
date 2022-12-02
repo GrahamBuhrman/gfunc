@@ -1,4 +1,150 @@
 
+
+# Diagnostic Plots for Linear Regression Models ----
+
+diagnostic_plots <- function(model, line_color = "steelblue", line_size = 1, point_color = "blue", point_shape = 1, point_alpha = 0.6){
+
+  #' Generate diagnostic plots for linear regression model
+  #'
+  #' Given a linear regression model and aesthetic parameters, generate plots to check assumptions of linear regression
+  #'
+  #' @param model The linear regression model to create diagnostic plots for
+  #' @param line_color The color of lines in the plots. Default is "steelblue"
+  #' @param line_size The size of lines in the plots. Default is 1
+  #' @param point_color The color of outliers in the plots. Default is "blue"
+  #' @param point_shape The shape of points in the plots. Default is 1
+  #' @param point_alpha The alpha of points in the plots. Default is 0.6
+  #'
+  #' @return A list of ggplot plot objects in the following order: Residual vs Fit, QQ Plot, Scale-Location, Leverage Plot, grid of all plots
+  #' @export
+  #'
+  #' @examples
+  #'
+  #' # create linear regression model
+  #'
+  #' data(mtcars)
+  #'
+  #' m1 <- lm(mpg ~ wt + am, data = mtcars)
+  #'
+  #' # generate diagnostic plots
+  #'
+  #' diagnostic_plots(model = m1)
+  #'
+  #'
+
+  # get metrics of linear regression model
+
+  model_metrics <-
+    broom::augment(model) %>%
+    dplyr::mutate(cooks.cutoff = dplyr::case_when(.cooksd <= 1 ~ 0,
+                                                  .cooksd > 1 ~ 1),
+                  sqrt.std.resid = sqrt(abs(.std.resid)))
+
+  # get range summaries of metrics
+
+  metric_stats <-
+    model_metrics %>%
+    dplyr::summarize(resid_range = range(.resid),
+                     fitted_range = range(.fitted),
+                     stdresid_range = range(.std.resid),
+                     hat_range = range(.hat),
+                     sqrt_stdresid_range = range(sqrt.std.resid))
+
+  # residual vs fit plot
+
+  resid_fit <-
+    ggplot2::ggplot(data = model_metrics,
+                    ggplot2::aes(x = .fitted,
+                                 y = .resid)) +
+    ggplot2::geom_jitter(shape = point_shape,
+                         alpha = point_alpha) +
+    ggplot2::geom_smooth(se = FALSE,
+                         color = line_color,
+                         size =  line_size) +
+    ggplot2::ylim(metric_stats$resid_range[1], metric_stats$resid_range[2]) +
+    ggplot2::xlim(metric_stats$fitted_range[1], metric_stats$fitted_range[2]) +
+    ggplot2::labs(x = "Fitted Value",
+                  y = "Residual",
+                  title = "Residual vs Fit") +
+    ggplot2::theme_bw()
+
+  # quantile-quantile plot
+
+  qq_plot <-
+    ggplot2::ggplot(data = model_metrics,
+                    ggplot2::aes(x =  qqnorm(.std.resid)[[1]],
+                                 y = .std.resid)) +
+    ggplot2::geom_jitter() +
+    ggplot2::geom_abline(size = line_size) +
+    ggplot2::labs(x = "Theoretical Quantiles",
+                  y = "Standardized Residual",
+                  title = "Normal Q-Q") +
+    ggplot2::theme_bw()
+
+  # scale-location plot
+
+  scale_location <-
+    ggplot2::ggplot(data = model_metrics,
+                    ggplot2::aes(x = .fitted,
+                                 y = sqrt.std.resid)) +
+    ggplot2::geom_jitter(shape = point_shape,
+                         alpha = point_alpha) +
+    ggplot2::geom_smooth(se = FALSE,
+                         color = line_color,
+                         size = line_size) +
+    ggplot2::ylim(metric_stats$sqrt_stdresid_range[1], metric_stats$sqrt_stdresid_range[2]) +
+    ggplot2::xlim(metric_stats$fitted_range[1], metric_stats$fitted_range[2]) +
+    ggplot2::labs(x = "Fitted Value",
+                  y = "Sqrt of Standardized Residual",
+                  title = "Scale-Location") +
+    ggplot2::theme_bw()
+
+  # leverage plot
+
+  leverage_plot <-
+    ggplot2::ggplot(data = model_metrics,
+                    ggplot2::aes(x = .hat,
+                                 y = .std.resid,
+                        color = factor(cooks.cutoff))) +
+    ggplot2::geom_jitter(shape = point_shape,
+                         alpha = point_alpha) +
+    ggplot2::geom_smooth(se = FALSE,
+                         color = line_color,
+                         size = line_size) +
+    ggplot2::ylim(metric_stats$stdresid_range[1], metric_stats$stdresid_range[2]) +
+    ggplot2::xlim(metric_stats$hat_range[1], metric_stats$hat_range[2]) +
+    ggplot2::scale_color_manual(values = c("black", point_color)) +
+    ggplot2::labs(x = "Leverage",
+                  y = "Standardized Residual",
+                  title = "Standardized Residual vs Leverage") +
+    ggplot2::theme_bw() +
+    ggplot2::theme(legend.position = "none")
+
+  # grid of all plots
+
+  all_plots <-
+    ggpubr::ggarrange(
+      resid_fit, qq_plot, scale_location, leverage_plot,
+      ncol = 2,
+      nrow = 2,
+      legend = "none"
+    )
+
+  # create list of all plots to return
+
+
+  plot_list <-list("resid-fit" = resid_fit,
+                   "qq" = qq_plot,
+                   "scale-location" = scale_location,
+                   "leverage" = leverage_plot,
+                   "all-plots" = all_plots)
+
+  return(plot_list)
+
+}
+
+# MLR Results Table Function ----
+
 mlr_table <- function(model, var_names){
 
   #' Generate MLR results table
@@ -15,7 +161,9 @@ mlr_table <- function(model, var_names){
   #'
   #' # create MLR model
   #'
-  #' m1 <- lm(mpg ~ wt + am)
+  #' data(mtcars)
+  #'
+  #' m1 <- lm(mpg ~ wt + am, data = mtcars)
   #'
   #' # make named list of parameter labels
   #'
@@ -24,45 +172,39 @@ mlr_table <- function(model, var_names){
   #' # generate results table
   #'
   #' mlr_table(model = m1, var_names = parameter_names)
-  #'
 
   # generate results table for multivariate linear regression model
-
-  require(tidyverse)
-  require(gtsummary)
-  require(parameters)
-  require(broom)
 
   # get model fit statistics
 
   fit_stats <-
     broom::glance(model) %>%
-    select(`R<sup>2</sup>` = r.squared,
-           `Adj R<sup>2</sup>` = adj.r.squared,
-           AIC, BIC) %>%
-    mutate(`f<sup>2</sup>` = `R<sup>2</sup>` / (1 - `R<sup>2</sup>`)) %>%
-    mutate_all(function(x) style_sigfig(x, digits = 3)) %>%
+    dplyr::select(`R<sup>2</sup>` = r.squared,
+                  `Adj R<sup>2</sup>` = adj.r.squared,
+                  AIC, BIC) %>%
+    dplyr::mutate(`f<sup>2</sup>` = `R<sup>2</sup>` / (1 - `R<sup>2</sup>`)) %>%
+    dplyr::mutate_all(function(x) gtsummary::style_sigfig(x, digits = 3)) %>%
     {paste(names(.), ., sep = " = ", collapse = "; ")}
 
   # generate results table
 
   table <-
-    tbl_regression(
+    gtsummary::tbl_regression(
       x = model,
       tidy_fun = function(x, conf.int = T, conf.level = 0.95)
         parameters::model_parameters(
           model = x,
           vcov = "vcovHC") %>%
         insight::standardize_names(style = "broom") %>%
-        tibble(),
+        tibble::tibble(),
       label = var_names,
       intercept = T) %>%
-    bold_labels() %>%
-    add_vif() %>%
-    add_q(method = "bonferroni") %>%
-    bold_p(q = T) %>%
-    modify_column_unhide(column = std.error) %>%
-    as_gt() %>%
+    gtsummary::bold_labels() %>%
+    gtsummary::add_vif() %>%
+    gtsummary::add_q(method = "bonferroni") %>%
+    gtsummary::bold_p(q = T) %>%
+    gtsummary::modify_column_unhide(column = std.error) %>%
+    gtsummary::as_gt() %>%
     gt::tab_source_note(gt::html(fit_stats))
 
   return(table)
