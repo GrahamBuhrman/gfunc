@@ -32,4 +32,5 @@ parameter_names <- list(wt = "Weight", am = "Transmission")
 # generate results table
 
 mlr_table(model = m1, var_names = parameter_names)
+
 }

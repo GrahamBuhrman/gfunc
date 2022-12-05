@@ -44,5 +44,4 @@ m1 <- lm(mpg ~ wt + am, data = mtcars)
 
 diagnostic_plots(model = m1)
 
-
 }
