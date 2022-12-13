@@ -2,6 +2,6 @@
 
 export("%>%")
 export(diagnostic_plots)
-export(mlr_table)
+export(reg_table)
 importFrom(magrittr,"%>%")
 importFrom(rlang,.data)

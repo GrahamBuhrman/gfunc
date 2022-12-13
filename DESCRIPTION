@@ -24,5 +24,4 @@ Imports:
     magrittr,
     parameters,
     rlang,
-    sandwhich,
     tibble
