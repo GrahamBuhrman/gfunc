@@ -181,7 +181,7 @@ mlr_table <- function(model, var_names) {
   #'
   #' data(mtcars)
   #'
-  #' m1 <- lm(mpg ~ wt + am, data = mtcars)
+  #' m1 <- stats::lm(mpg ~ wt + am, data = mtcars)
   #'
   #' # make named list of parameter labels
   #'
