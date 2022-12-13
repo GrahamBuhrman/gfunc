@@ -32,16 +32,3 @@ A list of ggplot plot objects in the following order: Residual vs Fit, QQ Plot, 
 \description{
 Given a linear regression model and aesthetic parameters, generate plots to check assumptions of linear regression
 }
-\examples{
-
-# create linear regression model
-
-data(mtcars)
-
-m1 <- lm(mpg ~ wt + am, data = mtcars)
-
-# generate diagnostic plots
-
-diagnostic_plots(model = m1)
-
-}

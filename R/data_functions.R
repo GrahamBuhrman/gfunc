@@ -23,18 +23,6 @@ diagnostic_plots <- function(model,
   #' @importFrom rlang .data
   #' @export
   #'
-  #' @examples
-  #'
-  #' # create linear regression model
-  #'
-  #' data(mtcars)
-  #'
-  #' m1 <- lm(mpg ~ wt + am, data = mtcars)
-  #'
-  #' # generate diagnostic plots
-  #'
-  #' diagnostic_plots(model = m1)
-  #'
 
   # get metrics of linear regression model
 
@@ -177,18 +165,6 @@ reg_table <- function(model, hide = NULL, adjust_method = "none", var_cov = NULL
   #' @return A gt table object of the model summary.
   #' @importFrom rlang .data
   #' @export
-  #'
-  #' @examples
-  #'
-  #' # create MLR model
-  #'
-  #' data(mtcars)
-  #'
-  #' # for a model of class "lm"
-  #'
-  #' m1 <- stats::lm(mpg ~ wt + am, data = mtcars)
-  #'
-  #' reg_table(m1)
   #'
 
   # generate results table for multivariate linear regression model

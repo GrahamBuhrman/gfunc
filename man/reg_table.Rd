@@ -29,16 +29,3 @@ A gt table object of the model summary.
 \description{
 Given a multivariate linear regression model and the labels for parameters, create a results table
 }
-\examples{
-
-# create MLR model
-
-data(mtcars)
-
-# for a model of class "lm"
-
-m1 <- stats::lm(mpg ~ wt + am, data = mtcars)
-
-reg_table(m1)
-
-}
