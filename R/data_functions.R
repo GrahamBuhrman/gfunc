@@ -207,8 +207,8 @@ reg_table <- function(model, hide = NULL, adjust_method = "none", var_cov = NULL
           ),
           locations = list(
             gt::cells_body(
-              columns = p.value,
-              rows = p.value < 0.05
+              columns = "p.value",
+              rows = "p.value" < 0.05
             ),
             gt::cells_column_labels()
           )
@@ -261,8 +261,8 @@ reg_table <- function(model, hide = NULL, adjust_method = "none", var_cov = NULL
           ),
           locations = list(
             gt::cells_body(
-              columns = p.value,
-              rows = p.value < 0.05
+              columns = "p.value",
+              rows = "p.value" < 0.05
             ),
             gt::cells_column_labels()
           )
