@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_functions.R
 \name{diagnostic_plots}
 \alias{diagnostic_plots}
-\title{Generate diagnostic plots for linear regression model}
+\title{Generate diagnostic plots for linear regression model.}
 \usage{
 diagnostic_plots(
   model,
@@ -14,21 +14,21 @@ diagnostic_plots(
 )
 }
 \arguments{
-\item{model}{Model object, of class "lm"}
+\item{model}{Model object, of class "lm".}
 
-\item{line_color}{A color, quoted, to be used as the color of plotted lines}
+\item{line_color}{A color, quoted, to be used as the color of plotted lines.}
 
-\item{line_size}{An integer, sets the size of plotted lines}
+\item{line_size}{An integer, sets the size of plotted lines.}
 
-\item{point_color}{A color, quoted, to be used as the color of plotted outliers}
+\item{point_color}{A color, quoted, to be used as the color of plotted outliers.}
 
-\item{point_shape}{An integer, sets the shape of plotted points}
+\item{point_shape}{An integer, sets the shape of plotted points.}
 
-\item{point_alpha}{A floating number between 0 and 1, sets the opacity of plotted points}
+\item{point_alpha}{A floating number between 0 and 1, sets the opacity of plotted points.}
 }
 \value{
-A list of ggplot plot objects in the following order: Residual vs Fit, QQ Plot, Scale-Location, Leverage Plot, grid of all plots
+A list of ggplot plot objects in the following order: Residual vs Fit, QQ Plot, Scale-Location, Leverage Plot, grid of all plots.
 }
 \description{
-Given a linear regression model and aesthetic parameters, generate plots to check assumptions of linear regression
+Given a linear regression model and aesthetic parameters, generate plots to check assumptions of linear regression.
 }

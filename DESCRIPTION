@@ -19,10 +19,11 @@ Imports:
     ggplot2,
     ggpubr,
     gt,
-    gtsummary,
     insight,
     magrittr,
+    methods,
     parameters,
     performance,
+    purrr,
     rlang,
     tibble
