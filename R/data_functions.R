@@ -12,12 +12,12 @@ diagnostic_plots <- function(model,
   #'
   #' Given a linear regression model and aesthetic parameters, generate plots to check assumptions of linear regression
   #'
-  #' @param model The linear regression model to create diagnostic plots for
-  #' @param line_color The color of lines in the plots. Default is "steelblue"
-  #' @param line_size The size of lines in the plots. Default is 1
-  #' @param point_color The color of outliers in the plots. Default is "blue"
-  #' @param point_shape The shape of points in the plots. Default is 1
-  #' @param point_alpha The alpha of points in the plots. Default is 0.6
+  #' @param model Model object, of class "lm"
+  #' @param line_color A color, quoted, to be used as the color of plotted lines
+  #' @param line_size An integer, sets the size of plotted lines
+  #' @param point_color A color, quoted, to be used as the color of plotted outliers
+  #' @param point_shape An integer, sets the shape of plotted points
+  #' @param point_alpha A floating number between 0 and 1, sets the opacity of plotted points
   #'
   #' @return A list of ggplot plot objects in the following order: Residual vs Fit, QQ Plot, Scale-Location, Leverage Plot, grid of all plots
   #' @importFrom rlang .data
@@ -26,28 +26,15 @@ diagnostic_plots <- function(model,
 
   # get metrics of linear regression model
 
-  resid <- fitted <- std_resid <- hat <- cooks_d <- cooks_cutoff <- sqrt_std_resid <- NULL
-
   model_metrics <-
     broom::augment(model) %>%
-    dplyr::mutate(resid = .data$.resid,
-                  fitted = .data$.fitted,
-                  std_resid = .data$.std.resid,
-                  hat = .data$.hat,
-                  cooks_d = .data$.cooksd) %>%
-    dplyr::mutate(cooks_cutoff = dplyr::case_when(.data$cooks_d <= 1 ~ 0,
-                                                  .data$cooks_d > 1 ~ 1),
-                  sqrt_std_resid = sqrt(abs(.data$std_resid)))
-
-  # get range summaries of metrics
-
-  metric_stats <-
-    model_metrics %>%
-    dplyr::summarize(resid_range = range(.data$resid),
-                     fitted_range = range(.data$fitted),
-                     stdresid_range = range(.data$std_resid),
-                     hat_range = range(.data$hat),
-                     sqrt_stdresid_range = range(.data$sqrt_std_resid))
+    dplyr::select(cooks_d = ".cooksd",
+                  fitted = ".fitted",
+                  hat = ".hat",
+                  resid = ".resid",
+                  std_resid = ".std.resid") %>%
+    dplyr::mutate(cooks_cutoff = dplyr::case_when(cooks_d <= 1 ~ 0,
+                                                  cooks_d > 1 ~ 1))
 
   # residual vs fit plot
 
@@ -60,10 +47,10 @@ diagnostic_plots <- function(model,
     ggplot2::geom_smooth(se = FALSE,
                          color = line_color,
                          size =  line_size) +
-    ggplot2::ylim(metric_stats$resid_range[1],
-                  metric_stats$resid_range[2]) +
-    ggplot2::xlim(metric_stats$fitted_range[1],
-                  metric_stats$fitted_range[2]) +
+    ggplot2::ylim(min(resid),
+                  max(resid)) +
+    ggplot2::xlim(min(fitted),
+                  max(fitted)) +
     ggplot2::labs(x = "Fitted Value",
                   y = "Residual",
                   title = "Residual vs Fit") +
@@ -87,16 +74,16 @@ diagnostic_plots <- function(model,
   scale_location <-
     ggplot2::ggplot(data = model_metrics,
                     ggplot2::aes(x = fitted,
-                                 y = sqrt_std_resid)) +
+                                 y = sqrt(std_resid))) +
     ggplot2::geom_jitter(shape = point_shape,
                          alpha = point_alpha) +
     ggplot2::geom_smooth(se = FALSE,
                          color = line_color,
                          size = line_size) +
-    ggplot2::ylim(metric_stats$sqrt_stdresid_range[1],
-                  metric_stats$sqrt_stdresid_range[2]) +
-    ggplot2::xlim(metric_stats$fitted_range[1],
-                  metric_stats$fitted_range[2]) +
+    ggplot2::ylim(min(sqrt(std_resid)),
+                  max(sqrt(std_resid))) +
+    ggplot2::xlim(min(fitted),
+                  max(fitted)) +
     ggplot2::labs(x = "Fitted Value",
                   y = "Sqrt of Standardized Residual",
                   title = "Scale-Location") +
@@ -108,16 +95,16 @@ diagnostic_plots <- function(model,
     ggplot2::ggplot(data = model_metrics,
                     ggplot2::aes(x = hat,
                                  y = std_resid,
-                        color = factor(cooks_cutoff))) +
+                                 color = cooks_cutoff)) +
     ggplot2::geom_jitter(shape = point_shape,
                          alpha = point_alpha) +
     ggplot2::geom_smooth(se = FALSE,
                          color = line_color,
                          size = line_size) +
-    ggplot2::ylim(metric_stats$stdresid_range[1],
-                  metric_stats$stdresid_range[2]) +
-    ggplot2::xlim(metric_stats$hat_range[1],
-                  metric_stats$hat_range[2]) +
+    ggplot2::ylim(min(std_resid),
+                  max(std_resid)) +
+    ggplot2::xlim(min(hat),
+                  max(hat)) +
     ggplot2::scale_color_manual(values = c("black", point_color)) +
     ggplot2::labs(x = "Leverage",
                   y = "Standardized Residual",

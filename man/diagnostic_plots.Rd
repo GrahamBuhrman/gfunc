@@ -14,17 +14,17 @@ diagnostic_plots(
 )
 }
 \arguments{
-\item{model}{The linear regression model to create diagnostic plots for}
+\item{model}{Model object, of class "lm"}
 
-\item{line_color}{The color of lines in the plots. Default is "steelblue"}
+\item{line_color}{A color, quoted, to be used as the color of plotted lines}
 
-\item{line_size}{The size of lines in the plots. Default is 1}
+\item{line_size}{An integer, sets the size of plotted lines}
 
-\item{point_color}{The color of outliers in the plots. Default is "blue"}
+\item{point_color}{A color, quoted, to be used as the color of plotted outliers}
 
-\item{point_shape}{The shape of points in the plots. Default is 1}
+\item{point_shape}{An integer, sets the shape of plotted points}
 
-\item{point_alpha}{The alpha of points in the plots. Default is 0.6}
+\item{point_alpha}{A floating number between 0 and 1, sets the opacity of plotted points}
 }
 \value{
 A list of ggplot plot objects in the following order: Residual vs Fit, QQ Plot, Scale-Location, Leverage Plot, grid of all plots
